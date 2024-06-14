@@ -19,8 +19,10 @@ defmodule Exexif.Decode do
   def tag(:tiff, 0x011B, value), do: {:y_resolution, value}
   def tag(:tiff, 0x0128, value), do: {:resolution_units, resolution(value)}
   def tag(:tiff, 0x0131, value), do: {:software, value}
-  def tag(:tiff, 0x0132, value), do: {:modify_date, inspect(value)}
+  def tag(:tiff, 0x0132, value), do: {:modify_date, value}
+  def tag(:tiff, 0x0213, value), do: {:y_cb_cr_positioning, y_cb_cr_position(value)}
 
+  def tag(:tiff, 0x8298, value), do: {:copyright, value}
   def tag(:tiff, 0x8769, value), do: {:exif, value}
   def tag(:tiff, 0x8825, value), do: {:gps, value}
 
@@ -39,6 +41,9 @@ defmodule Exexif.Decode do
   def tag(_, 0x9000, value), do: {:exif_version, version(value)}
   def tag(_, 0x9003, value), do: {:datetime_original, value}
   def tag(_, 0x9004, value), do: {:datetime_digitized, value}
+  def tag(_, 0x9010, value), do: {:offset_time, value}
+  def tag(_, 0x9011, value), do: {:offset_time_original, value}
+  def tag(_, 0x9012, value), do: {:offset_time_digitized, value}
   def tag(_, 0x9101, value), do: {:component_configuration, component_configuration(value)}
   def tag(_, 0x9102, value), do: {:compressed_bits_per_pixel, value}
   def tag(_, 0x9201, value), do: {:shutter_speed_value, value}
@@ -51,6 +56,7 @@ defmodule Exexif.Decode do
   def tag(_, 0x9208, value), do: {:light_source, value}
   def tag(_, 0x9209, value), do: {:flash, flash(value)}
   def tag(_, 0x920A, value), do: {:focal_length, value}
+  def tag(_, 0x9211, value), do: {:image_number, value}
   def tag(_, 0x9214, value), do: {:subject_area, value}
   def tag(_, 0x927C, value), do: {:maker_note, value}
   def tag(_, 0x9286, value), do: {:user_comment, value}
@@ -89,10 +95,13 @@ defmodule Exexif.Decode do
   def tag(_, 0xA40B, value), do: {:device_setting_description, value}
   def tag(_, 0xA40C, value), do: {:subject_distance_range, subject_distance_range(value)}
   def tag(_, 0xA420, value), do: {:image_unique_id, value}
+  def tag(_, 0xA431, value), do: {:serial_number, value}
   def tag(_, 0xA432, value), do: {:lens_info, value}
   def tag(_, 0xA433, value), do: {:lens_make, value}
   def tag(_, 0xA434, value), do: {:lens_model, value}
   def tag(_, 0xA435, value), do: {:lens_serial_number, value}
+  def tag(_, 0xA436, value), do: {:title, value}
+  def tag(_, 0xFDEA, value), do: {:lens, value}
 
   # http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/GPS.html
   Gps.fields()
@@ -106,6 +115,11 @@ defmodule Exexif.Decode do
   end
 
   # Value decodes
+
+  @spec y_cb_cr_position(non_neg_integer()) :: binary()
+  defp y_cb_cr_position(1), do: "Centered"
+  defp y_cb_cr_position(2), do: "Co-sited"
+  defp y_cb_cr_position(other), do: "Unknown (#{other})"
 
   @spec orientation(non_neg_integer()) :: binary()
   defp orientation(1), do: "Horizontal (normal)"
