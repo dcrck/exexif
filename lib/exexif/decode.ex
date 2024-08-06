@@ -102,6 +102,7 @@ defmodule Exexif.Decode do
   def tag(_, 0xA435, value), do: {:lens_serial_number, value}
   def tag(_, 0xA436, value), do: {:title, value}
   def tag(_, 0xC789, value), do: {:reel_name, value}
+  def tag(_, 0xC7A1, value), do: {:camera_label, value}
   def tag(_, 0xFDEA, value), do: {:lens, value}
 
   # http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/GPS.html
